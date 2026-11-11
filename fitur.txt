@@ -1,0 +1,25 @@
+1. (Login, Register, Logout, & Proteksi Session)
+   - Registrasi & Login Multi-Role: Pendaftaran dan masuk akun yang dibedakan berdasarkan peran pengguna, yaitu akun Petani dan akun Konsumen.
+   - Proteksi Session (Otorisasi Akses): Pembatasan hak akses halaman. Konsumen tidak bisa mengakses dashboard penjualan petani, dan pengunjung yang belum login tidak bisa melakukan checkout (pembayaran).
+   - Manajemen Profil Akun: Fitur bagi pengguna untuk melengkapi data diri, alamat lengkap (terutama untuk penentuan lokasi drop point konsumen atau agen desa bagi petani), dan informasi rekening bank (untuk pencairan dana petani).
+   - Logout: Fitur untuk keluar dari sesi akun dengan aman.
+
+2.  (Create, Read, Update, Delete - CRUD)
+ :Kelola Data Hasil Panen (Petani):
+   - Create: Petani memposting hasil panen baru (nama sayur, harga, stok).
+   - Read: Petani melihat daftar produk yang sedang dijual.
+   - Update: Memperbarui sisa stok atau menyesuaikan harga.
+   - Delete: Menghapus atau menarik produk yang sudah habis/busuk.
+
+ :Kelola Pesanan & Keranjang (Konsumen):
+   - Create: Menambahkan produk ke keranjang, membuat pesanan belanja (checkout), dan membuat pesanan langganan otomatis (mingguan).
+   - Read: Melihat riwayat transaksi dan melacak status pesanan.
+
+ :Kelola Penjualan (Petani): Dashboard penjualan untuk melihat pesanan masuk (Read) dan memperbarui status pemrosesan/pengiriman pesanan ke agen desa (Update).
+
+3. Fitur Unggah Berkas (Upload File/Gambar)
+   - Unggah Foto Produk/Panen: Petani dapat mengunggah gambar asli dari sayur atau hasil panen mereka agar konsumen melihat kualitas produk secara langsung.
+
+4. Fitur Tambahan Pendukung (Pencarian/Filter/Fitur Khusus Tema)
+   - Pencarian & Katalog Produk (Konsumen): Fitur untuk mencari hasil panen tertentu dengan filter kategori (sayur daun, buah, bumbu), harga, maupun lokasi desa/petani.
+   - Traceability View: Halaman detail produk / deskripsi produk.\/stok
