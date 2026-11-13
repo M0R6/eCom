@@ -1,9 +1,9 @@
 declare module '#auth-utils' {
   interface User {
     id: number
-    name: string
+    nama: string
     email: string
-    role: boolean
+    peran: 'Petani' | 'Konsumen'
   }
 }
 export {}

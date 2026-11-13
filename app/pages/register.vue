@@ -2,29 +2,29 @@
 import { z } from "zod";
 
 const roleItems = [
-  { label: "Pembeli", value: "0", description: "Saya ingin membeli produk" },
-  { label: "Petani", value: "1", description: "Saya ingin menjual hasil tani" },
+  { label: "Konsumen", value: "Konsumen", description: "Saya ingin membeli produk" },
+  { label: "Petani", value: "Petani", description: "Saya ingin menjual hasil tani" },
 ];
 
 const schema = z
   .object({
-    name: z.string().min(2, "Nama minimal 2 karakter"),
+    nama: z.string().min(2, "Nama minimal 2 karakter"),
     email: z.string().email("Email tidak valid"),
-    password: z.string().min(8, "Password minimal 8 karakter"),
-    confirmPassword: z.string(),
-    role: z.enum(["0", "1"]),
+    kataSandi: z.string().min(8, "Password minimal 8 karakter"),
+    confirmKataSandi: z.string(),
+    peran: z.enum(["Petani", "Konsumen"]),
   })
-  .refine((v) => v.password === v.confirmPassword, {
+  .refine((v) => v.kataSandi === v.confirmKataSandi, {
     message: "Konfirmasi password tidak sama",
-    path: ["confirmPassword"],
+    path: ["confirmKataSandi"],
   });
 
 const state = reactive({
-  name: "",
+  nama: "",
   email: "",
-  password: "",
-  confirmPassword: "",
-  role: "0",
+  kataSandi: "",
+  confirmKataSandi: "",
+  peran: "Konsumen" as "Petani" | "Konsumen",
 });
 
 const toast = useToast();
@@ -37,10 +37,10 @@ async function onSubmit() {
     await $fetch("/api/auth/register", {
       method: "POST",
       body: {
-        name: state.name,
+        nama: state.nama,
         email: state.email,
-        password: state.password,
-        role: state.role === "1",
+        kataSandi: state.kataSandi,
+        peran: state.peran,
       },
     });
     await refreshSession();
@@ -59,32 +59,39 @@ async function onSubmit() {
 </script>
 
 <template>
-  <UContainer class="min-h-screen flex items-center justify-center">
-    <UCard class="w-full max-w-sm">
+  <Header />
+  <UContainer class="min-h-[calc(100dvh-var(--ui-header-height))] flex items-center justify-center">
+    <UCard class="w-full max-w-fit">
       <template #header>
         <h1 class="font-semibold">Buat Akun</h1>
       </template>
 
       <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-        <UFormField label="Nama" name="name">
-          <UInput v-model="state.name" class="w-full" />
-        </UFormField>
+        <div class="flex gap-3">
+          <UFormField label="Nama" name="nama">
+            <UInput v-model="state.nama" class="w-full" />
+          </UFormField>
 
-        <UFormField label="Email" name="email">
-          <UInput v-model="state.email" type="email" class="w-full" />
-        </UFormField>
+          <UFormField label="Email" name="email" class="">
+            <UInput v-model="state.email" type="email" class="w-full" />
+          </UFormField>
+        </div>
 
-        <UFormField label="Daftar sebagai" name="role">
-          <URadioGroup v-model="state.role" :items="roleItems" />
-        </UFormField>
+        <div class="flex gap-3">
+          <UFormField label="Password" name="kataSandi">
+            <UInput v-model="state.kataSandi" type="password" class="w-full" />
+          </UFormField>
 
-        <UFormField label="Password" name="password">
-          <UInput v-model="state.password" type="password" class="w-full" />
-        </UFormField>
+          <UFormField label="Konfirmasi Password" name="confirmKataSandi">
+            <UInput v-model="state.confirmKataSandi" type="password" class="w-full" />
+          </UFormField>
 
-        <UFormField label="Konfirmasi Password" name="confirmPassword">
-          <UInput v-model="state.confirmPassword" type="password" class="w-full" />
-        </UFormField>
+        </div>
+        <div class="flex justify-center">
+          <UFormField label="Daftar sebagai" name="peran">
+            <URadioGroup v-model="state.peran" :items="roleItems" orientation="horizontal" />
+          </UFormField>
+        </div>
 
         <UButton type="submit" block :loading="loading">Daftar</UButton>
       </UForm>

@@ -3,6 +3,13 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 
 const route = useRoute();
 const colorMode = useColorMode();
+const { loggedIn, user, clear } = useUserSession()
+
+async function logout() {
+  await $fetch('/api/auth/logout', { method: 'POST' })
+  await clear()
+  await navigateTo('/login')
+}
 
 const items = computed<NavigationMenuItem[]>(() => [
   {
@@ -11,7 +18,7 @@ const items = computed<NavigationMenuItem[]>(() => [
     icon: "i-lucide-book-open",
     active: route.path.startsWith("/docs/getting-started"),
   },
-  {
+  { 
     label: "Components",
     to: "/docs/components",
     icon: "i-lucide-box",
@@ -80,6 +87,14 @@ const currentIcon = computed(() => {
           <UButton color="neutral" variant="ghost" :icon="currentIcon" />
         </UTooltip>
       </UDropdownMenu>
+
+      <UTooltip text="Login" placement="bottom">
+        <UButton to="/login" variant="solid" v-if="route.path !== '/login' && route.path !== '/register' && !loggedIn">Login</UButton>
+      </UTooltip>
+
+      <UTooltip text="Logout" placement="bottom">
+        <UButton @click="logout" variant="solid" color="error" v-if="loggedIn">Logout</UButton>
+      </UTooltip>
     </template>
 
     <UNavigationMenu :items="items" />

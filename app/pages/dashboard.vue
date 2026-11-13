@@ -10,8 +10,10 @@ async function logout() {
 </script>
 
 <template>
+  <Header />
   <UContainer class="py-10 space-y-4">
-    <h1 class="text-xl font-semibold">Halo, {{ user?.name }} <span class="text-sm text-gray-400" >({{ user?.role ? "Petani" : "Costumer" }})</span></h1>
+    <h1 class="text-xl font-semibold">Halo, {{ user?.nama }} <span class="text-sm text-gray-400" >({{ user?.peran === "Petani" ? "Petani" : "Konsumen" }})</span></h1>
+    <UButton color="neutral" variant="outline" to="/profil">Lihat profil</UButton>
     <UButton color="neutral" variant="outline" @click="logout">Logout</UButton>
   </UContainer>
 </template>

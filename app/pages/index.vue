@@ -2,7 +2,9 @@
 const { user } = useUserSession();
 const route = useRoute()
 
-if (route.query.notfarmer && user.value?.role !== true) {
+definePageMeta({ middleware: 'unauth' })
+
+if (route.query.notfarmer && user.value?.peran !== 'Petani') {
   useToast().add({
     title: 'Akses ke halaman ini ditolak!',
     description: 'Role tidak sesuai',

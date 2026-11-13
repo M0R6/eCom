@@ -6,6 +6,15 @@ export default defineNuxtConfig({
     'nuxt-auth-utils'
   ],
 
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        'zod',
+      ]
+    }
+  },
+  
   devtools: {
     enabled: true
   },

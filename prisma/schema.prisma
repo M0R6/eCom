@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -12,11 +7,277 @@ datasource db {
   provider = "mysql"
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  role      Boolean
-  password  String
-  createdAt DateTime @default(now())
+model akunbank {
+  idRekening      Int          @id @default(autoincrement())
+  idProfilPetani  Int
+  namaBank        String?      @db.VarChar(50)
+  nomorRekening   String?      @db.VarChar(50)
+  pemilikRekening String?      @db.VarChar(100)
+  profilpetani    profilpetani @relation(fields: [idProfilPetani], references: [idPetani], onDelete: Cascade, onUpdate: Restrict, map: "akunbank_ibfk_1")
+
+  @@index([idProfilPetani], map: "idProfilPetani")
+}
+
+model alamat {
+  idAlamat        Int         @id @default(autoincrement())
+  idPengguna      Int
+  namaPenerima    String?     @db.VarChar(100)
+  nomorTelepon    String?     @db.VarChar(20)
+  detailAlamat    String?     @db.Text
+  desa            String?     @db.VarChar(100)
+  kecamatan       String?     @db.VarChar(100)
+  kota            String?     @db.VarChar(100)
+  provinsi        String?     @db.VarChar(100)
+  kodePos         String?     @db.VarChar(10)
+  alamatTersimpan String?     @db.VarChar(100)
+  pengguna        pengguna    @relation(fields: [idPengguna], references: [idPengguna], onDelete: Cascade, onUpdate: Restrict, map: "alamat_ibfk_1")
+  langganan       langganan[]
+
+  @@index([idPengguna], map: "idPengguna")
+}
+
+model barangpesanan {
+  idBarangPesanan Int     @id @default(autoincrement())
+  idPesanan       Int
+  idProduk        Int?
+  namaProduk      String? @db.VarChar(150)
+  harga           Decimal @db.Decimal(10, 2)
+  jumlah          Int
+  subtotal        Decimal @db.Decimal(15, 2)
+  pesanan         pesanan @relation(fields: [idPesanan], references: [idPesanan], onDelete: Cascade, onUpdate: Restrict, map: "barangpesanan_ibfk_1")
+  produk          produk? @relation(fields: [idProduk], references: [idProduk], onUpdate: Restrict, map: "barangpesanan_ibfk_2")
+
+  @@index([idPesanan], map: "idPesanan")
+  @@index([idProduk], map: "idProduk")
+}
+
+model gambarproduk {
+  idGambarProduk Int    @id @default(autoincrement())
+  idProduk       Int
+  tautanGambar   String @db.VarChar(255)
+  urutanTampil   Int?   @default(1)
+  produk         produk @relation(fields: [idProduk], references: [idProduk], onDelete: Cascade, onUpdate: Restrict, map: "gambarproduk_ibfk_1")
+
+  @@index([idProduk], map: "idProduk")
+}
+
+model itemkeranjang {
+  idItemKeranjang Int       @id @default(autoincrement())
+  idKeranjang     Int
+  idProduk        Int
+  jumlah          Int       @default(1)
+  keranjang       keranjang @relation(fields: [idKeranjang], references: [idKeranjang], onDelete: Cascade, onUpdate: Restrict, map: "itemkeranjang_ibfk_1")
+  produk          produk    @relation(fields: [idProduk], references: [idProduk], onDelete: Cascade, onUpdate: Restrict, map: "itemkeranjang_ibfk_2")
+
+  @@index([idKeranjang], map: "idKeranjang")
+  @@index([idProduk], map: "idProduk")
+}
+
+model itemlangganan {
+  idItemLangganan Int       @id @default(autoincrement())
+  idLangganan     Int
+  idProduk        Int
+  jumlah          Int
+  langganan       langganan @relation(fields: [idLangganan], references: [idLangganan], onDelete: Cascade, onUpdate: Restrict, map: "itemlangganan_ibfk_1")
+  produk          produk    @relation(fields: [idProduk], references: [idProduk], onDelete: Cascade, onUpdate: Restrict, map: "itemlangganan_ibfk_2")
+
+  @@index([idLangganan], map: "idLangganan")
+  @@index([idProduk], map: "idProduk")
+}
+
+model kategori {
+  idKategori Int      @id @default(autoincrement())
+  nama       String   @db.VarChar(100)
+  deskripsi  String?  @db.Text
+  produk     produk[]
+}
+
+model keranjang {
+  idKeranjang      Int             @id @default(autoincrement())
+  idProfilKonsumen Int
+  dibuatPada       DateTime?       @default(now()) @db.DateTime(0)
+  diperbaruiPada   DateTime?       @default(now()) @db.DateTime(0)
+  itemkeranjang    itemkeranjang[]
+  profilkonsumen   profilkonsumen  @relation(fields: [idProfilKonsumen], references: [idKonsumen], onDelete: Cascade, onUpdate: Restrict, map: "keranjang_ibfk_1")
+
+  @@index([idProfilKonsumen], map: "idProfilKonsumen")
+}
+
+model langganan {
+  idLangganan                 Int                 @id @default(autoincrement())
+  idProfilKonsumen            Int
+  idAlamat                    Int
+  status                      langganan_status?   @default(Aktif)
+  frekuensi                   langganan_frekuensi
+  tanggalPengirimanBerikutnya DateTime            @db.Date
+  dibuatPada                  DateTime?           @default(now()) @db.DateTime(0)
+  itemlangganan               itemlangganan[]
+  profilkonsumen              profilkonsumen      @relation(fields: [idProfilKonsumen], references: [idKonsumen], onDelete: Cascade, onUpdate: Restrict, map: "langganan_ibfk_1")
+  alamat                      alamat              @relation(fields: [idAlamat], references: [idAlamat], onDelete: Cascade, onUpdate: Restrict, map: "langganan_ibfk_2")
+
+  @@index([idAlamat], map: "idAlamat")
+  @@index([idProfilKonsumen], map: "idProfilKonsumen")
+}
+
+model pengetahuanchatbot {
+  idPengetahuanChatbot Int       @id @default(autoincrement())
+  pertanyaan           String    @db.Text
+  jawaban              String    @db.Text
+  kataKunci            String?   @db.VarChar(255)
+  kategori             String?   @db.VarChar(100)
+  aktif                Boolean?  @default(true)
+  diperbaruiPada       DateTime? @default(now()) @db.DateTime(0)
+}
+
+model pengguna {
+  idPengguna           Int                    @id @default(autoincrement())
+  nama                 String                 @db.VarChar(100)
+  email                String                 @unique(map: "email") @db.VarChar(100)
+  kataSandi            String                 @db.VarChar(255)
+  peran                pengguna_peran
+  dibuatPada           DateTime?              @default(now()) @db.DateTime(0)
+  alamat               alamat[]
+  percakapanchat       percakapanchat[]
+  profilkonsumen       profilkonsumen?
+  profilpetani         profilpetani?
+  riwayatstatuspesanan riwayatstatuspesanan[]
+}
+
+model percakapanchat {
+  idPercakapanChat Int         @id @default(autoincrement())
+  idPengguna       Int
+  judul            String?     @db.VarChar(150)
+  dibuatPada       DateTime?   @default(now()) @db.DateTime(0)
+  diperbaruiPada   DateTime?   @default(now()) @db.DateTime(0)
+  pengguna         pengguna    @relation(fields: [idPengguna], references: [idPengguna], onDelete: Cascade, onUpdate: Restrict, map: "percakapanchat_ibfk_1")
+  pesanchat        pesanchat[]
+
+  @@index([idPengguna], map: "idPengguna")
+}
+
+model pesanan {
+  idPesanan            Int                    @id @default(autoincrement())
+  idProfilKonsumen     Int
+  status               pesanan_status?        @default(Menunggu_Pembayaran)
+  jumlahTotal          Decimal                @db.Decimal(15, 2)
+  alamatPengiriman     String                 @db.Text
+  dibuatPada           DateTime?              @default(now()) @db.DateTime(0)
+  diperbaruiPada       DateTime?              @default(now()) @db.DateTime(0)
+  barangpesanan        barangpesanan[]
+  profilkonsumen       profilkonsumen         @relation(fields: [idProfilKonsumen], references: [idKonsumen], onDelete: Cascade, onUpdate: Restrict, map: "pesanan_ibfk_1")
+  riwayatstatuspesanan riwayatstatuspesanan[]
+
+  @@index([idProfilKonsumen], map: "idProfilKonsumen")
+}
+
+model pesanchat {
+  idPesanChat    Int             @id @default(autoincrement())
+  idPercakapan   Int
+  peran          pesanchat_peran
+  konten         String          @db.Text
+  dibuatPada     DateTime?       @default(now()) @db.DateTime(0)
+  percakapanchat percakapanchat  @relation(fields: [idPercakapan], references: [idPercakapanChat], onDelete: Cascade, onUpdate: Restrict, map: "pesanchat_ibfk_1")
+
+  @@index([idPercakapan], map: "idPercakapan")
+}
+
+model produk {
+  idProduk       Int             @id @default(autoincrement())
+  idProfilPetani Int
+  idKategori     Int?
+  nama           String          @db.VarChar(150)
+  deskripsi      String?         @db.Text
+  harga          Decimal         @db.Decimal(10, 2)
+  stok           Int?            @default(0)
+  satuan         String?         @db.VarChar(20)
+  status         produk_status?  @default(Tersedia)
+  dibuatPada     DateTime?       @default(now()) @db.DateTime(0)
+  diperbaruiPada DateTime?       @default(now()) @db.DateTime(0)
+  barangpesanan  barangpesanan[]
+  gambarproduk   gambarproduk[]
+  itemkeranjang  itemkeranjang[]
+  itemlangganan  itemlangganan[]
+  profilpetani   profilpetani    @relation(fields: [idProfilPetani], references: [idPetani], onDelete: Cascade, onUpdate: Restrict, map: "produk_ibfk_1")
+  kategori       kategori?       @relation(fields: [idKategori], references: [idKategori], onUpdate: Restrict, map: "produk_ibfk_2")
+
+  @@index([idKategori], map: "idKategori")
+  @@index([idProfilPetani], map: "idProfilPetani")
+}
+
+model profilkonsumen {
+  idKonsumen   Int         @id @default(autoincrement())
+  idPengguna   Int         @unique
+  nomorTelepon String?     @db.VarChar(20)
+  keranjang    keranjang[]
+  langganan    langganan[]
+  pesanan      pesanan[]
+  pengguna     pengguna    @relation(fields: [idPengguna], references: [idPengguna], onDelete: Cascade, onUpdate: Restrict, map: "profilkonsumen_ibfk_1")
+
+  @@index([idPengguna], map: "idPengguna")
+}
+
+model profilpetani {
+  idPetani      Int        @id @default(autoincrement())
+  idPengguna    Int        @unique
+  namaPertanian String?    @db.VarChar(150)
+  nomorTelepon  String?    @db.VarChar(20)
+  alamat        String?    @db.Text
+  deskripsi     String?    @db.Text
+  akunbank      akunbank[]
+  produk        produk[]
+  pengguna      pengguna   @relation(fields: [idPengguna], references: [idPengguna], onDelete: Cascade, onUpdate: Restrict, map: "profilpetani_ibfk_1")
+
+  @@index([idPengguna], map: "idPengguna")
+}
+
+model riwayatstatuspesanan {
+  idRiwayatStatusPesanan Int       @id @default(autoincrement())
+  idPesanan              Int
+  idDiubahOlehPengguna   Int
+  statusLama             String?   @db.VarChar(50)
+  statusBaru             String?   @db.VarChar(50)
+  catatan                String?   @db.Text
+  dibuatPada             DateTime? @default(now()) @db.DateTime(0)
+  pesanan                pesanan   @relation(fields: [idPesanan], references: [idPesanan], onDelete: Cascade, onUpdate: Restrict, map: "riwayatstatuspesanan_ibfk_1")
+  pengguna               pengguna  @relation(fields: [idDiubahOlehPengguna], references: [idPengguna], onDelete: Cascade, onUpdate: Restrict, map: "riwayatstatuspesanan_ibfk_2")
+
+  @@index([idDiubahOlehPengguna], map: "idDiubahOlehPengguna")
+  @@index([idPesanan], map: "idPesanan")
+}
+
+enum pesanan_status {
+  Menunggu_Pembayaran @map("Menunggu Pembayaran")
+  Diproses
+  Dikirim
+  Selesai
+  Dibatalkan
+}
+
+enum pesanchat_peran {
+  User
+  Bot
+  Admin
+}
+
+enum langganan_status {
+  Aktif
+  Jeda
+  Berhenti
+}
+
+enum langganan_frekuensi {
+  Harian
+  Mingguan
+  Bulanan
+}
+
+enum pengguna_peran {
+  Petani
+  Konsumen
+}
+
+enum produk_status {
+  Tersedia
+  Habis
+  Disembunyikan
 }

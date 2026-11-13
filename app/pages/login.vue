@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { z } from "zod";
 
+definePageMeta({ middleware: 'unauth' })
+
 const schema = z.object({
   email: z.string().email("Email tidak valid"),
-  password: z.string().min(1, "Wajib diisi"),
+  kataSandi: z.string().min(1, "Wajib diisi"),
 });
 
-const state = reactive({ email: "", password: "" });
+const state = reactive({ email: "", kataSandi: "" });
 const toast = useToast();
 const { fetch: refreshSession } = useUserSession();
 const loading = ref(false);
+const route = useRoute()
 
 async function onSubmit() {
   loading.value = true;
@@ -24,7 +27,6 @@ async function onSubmit() {
   }
 }
 
-const route = useRoute()
 
 if (route.query.unauthorized) {
   toast.add({
@@ -37,16 +39,19 @@ if (route.query.unauthorized) {
 </script>
 
 <template>
-   <Header />
-  <UContainer class="min-h-screen flex items-center justify-center">
+  <Header />
+  <UContainer class="flex items-center justify-center min-h-[calc(100dvh-var(--ui-header-height))]">
     <UCard class="w-full max-w-sm">
+    <div class="flex items-center justify-center">
+      <AppLogo class="size-48" />
+    </div>
       <template #header><h1 class="font-semibold">Login</h1></template>
       <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
         <UFormField label="Email" name="email">
           <UInput v-model="state.email" type="email" class="w-full" />
         </UFormField>
-        <UFormField label="Password" name="password">
-          <UInput v-model="state.password" type="password" class="w-full" />
+        <UFormField label="Password" name="kataSandi">
+          <UInput v-model="state.kataSandi" type="password" class="w-full" />
         </UFormField>
         <UButton type="submit" block :loading="loading">Masuk</UButton>
       </UForm>

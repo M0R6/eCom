@@ -1,15 +1,22 @@
 import { z } from 'zod'
 
-const schema = z.object({ email: z.string().email(), password: z.string().min(1) })
+const schema = z.object({ email: z.string().email(), kataSandi: z.string().min(1) })
 
 export default defineEventHandler(async (event) => {
-  const { email, password } = await readValidatedBody(event, schema.parse)
+  const { email, kataSandi } = await readValidatedBody(event, schema.parse)
 
-  const user = await prisma.user.findUnique({ where: { email } })
-  if (!user || !(await verifyPassword(user.password, password))) {
+  const pengguna = await prisma.pengguna.findUnique({ where: { email } })
+  if (!pengguna || !(await verifyPassword(pengguna.kataSandi, kataSandi))) {
     throw createError({ statusCode: 401, statusMessage: 'Email atau password salah' })
   }
 
-  await setUserSession(event, { user: { id: user.id, name: user.name, email: user.email, role: user.role } })
+  await setUserSession(event, {
+    user: {
+      id: pengguna.idPengguna,
+      nama: pengguna.nama,
+      email: pengguna.email,
+      peran: pengguna.peran,
+    },
+  })
   return { ok: true }
 })
