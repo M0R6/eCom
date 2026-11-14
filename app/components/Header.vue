@@ -91,14 +91,39 @@ const itemsDrop = computed<DropdownMenuItem[][]>(() => {
         icon: 'i-lucide-user',
         onSelect: () => {
           navigateTo("/profil");
-        }
+        },
+        active: route.path.startsWith("/profil"),
       },
       {
         label: 'Dashboard',
         icon: 'coolicons:dashboard-duocolor',
-        onSelect: () => {
-          navigateTo("/farmer-dashboard");
-        }
+        children: [
+          {
+            label: 'Statistik',
+            icon: 'i-lucide-bar-chart-2',
+            onSelect: () => {
+              navigateTo("/farmer-dashboard");
+            },
+            active: route.path.startsWith("/farmer-dashboard"),
+
+          },
+          {
+            label: 'Produk',
+            icon: 'i-lucide-package',
+            onSelect: () => {
+              navigateTo("/farmer-dashboard/produk");
+            },
+            active: route.path.startsWith("/farmer-dashboard/produk"),
+          },
+          {
+            label: 'Pesanan',
+            icon: 'i-lucide-shopping-cart',
+            onSelect: () => {
+              navigateTo("/farmer-dashboard/pesanan");
+            },
+            active: route.path.startsWith("/farmer-dashboard/pesanan"),
+          }
+        ]
       },
     ],
     [
@@ -130,7 +155,8 @@ const itemsDrop = computed<DropdownMenuItem[][]>(() => {
         icon: 'i-lucide-user',
         onSelect: () => {
           navigateTo("/profil");
-        }
+        },
+        active: route.path.startsWith("/profil"),
       },
     ],
     [
