@@ -179,22 +179,25 @@ const logoutModal = ref(false);
   <UHeader>
     <template #title>
       <!-- <UIcon name="streamline-freehand:e-commerce-cart-laptop" class="size-8" /> -->
-      <AppLogo class="size-7" />
-      <h1 class="align-middle text-center ml-2">eCommerce</h1>
+      <div class="flex items-center gap-2">
+        <AppLogo class="size-10" />
+        <h1 class="align-middle text-center ml-2">eCommerce</h1>
+      </div>
     </template>
 
     <template #right>
       <!-- <UColorModeButton /> -->
-      <UDropdownMenu v-if="loggedIn" :items="itemsDrop">
-        <UButton icon="i-lucide-user" color="neutral" variant="outline" />
-      </UDropdownMenu>
       
       <UDropdownMenu :items="iconItems" :popper="{ placement: 'bottom-start' }">
         <UTooltip text="Change color mode" placement="bottom">
           <UButton color="neutral" variant="ghost" :icon="currentIcon" />
         </UTooltip>
       </UDropdownMenu>
-
+      
+      <UDropdownMenu v-if="loggedIn" :items="itemsDrop">
+        <UButton icon="i-lucide-user" color="neutral" variant="outline" />
+      </UDropdownMenu>
+      
       <UTooltip text="Login" placement="bottom">
         <UButton to="/login" variant="solid" v-if="route.path !== '/login' && route.path !== '/register' && !loggedIn">Login</UButton>
       </UTooltip>
