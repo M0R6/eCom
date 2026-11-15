@@ -69,7 +69,7 @@ async function hapus(id: number) {
               <p class="font-medium">{{ p.nama }}</p>
               <p class="text-sm text-muted">{{ p.kategori?.nama ?? 'Tanpa kategori' }}</p>
             </div>
-            <UBadge :label="p.stok < 10 ? 'Habis' : 'Tersedia'" :color="statusColor[p.status ?? 'Tersedia']" variant="subtle" />
+            <UBadge :label="(p.stok ?? 0) <= 0 ? 'Habis' : 'Tersedia'" :color="statusColor[p.status ?? 'Tersedia']" variant="subtle" />
           </div>
 
           <p class="mt-2 font-semibold">
