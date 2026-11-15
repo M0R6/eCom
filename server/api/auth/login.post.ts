@@ -15,8 +15,8 @@ export default defineEventHandler(async (event) => {
       id: pengguna.idPengguna,
       nama: pengguna.nama,
       email: pengguna.email,
-      peran: pengguna.peran,
-    },
+      peran: pengguna.peran
+    }
   })
   return { ok: true }
 })

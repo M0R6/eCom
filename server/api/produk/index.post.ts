@@ -9,7 +9,7 @@ const schema = z.object({
   harga: z.coerce.number().positive(),
   stok: z.coerce.number().int().min(0),
   satuan: z.string().max(20),
-  idKategori: z.coerce.number().int().positive().nullable().optional(),
+  idKategori: z.coerce.number().int().positive().nullable().optional()
 })
 
 export default defineEventHandler(async (event) => {
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const fields = Object.fromEntries(
     (parts ?? [])
       .filter(part => part.name && !part.filename)
-      .map(part => [part.name!, part.data.toString()]),
+      .map(part => [part.name!, part.data.toString()])
   )
   const body = schema.parse(fields)
   const image = parts?.find(part => part.name === 'gambar' && part.filename)
@@ -45,13 +45,13 @@ export default defineEventHandler(async (event) => {
         data: {
           ...body,
           idProfilPetani: profil.idPetani,
-          status: body.stok === 0 ? 'Habis' : 'Tersedia',
-        },
+          status: body.stok === 0 ? 'Habis' : 'Tersedia'
+        }
       })
 
       if (imageUrl) {
         await tx.gambarproduk.create({
-          data: { idProduk: produk.idProduk, tautanGambar: imageUrl },
+          data: { idProduk: produk.idProduk, tautanGambar: imageUrl }
         })
       }
 

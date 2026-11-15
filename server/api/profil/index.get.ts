@@ -15,8 +15,8 @@ export default defineEventHandler(async (event: H3Event) => {
     include: {
       profilpetani: { include: { akunbank: true } },
       profilkonsumen: true,
-      alamat: { orderBy: { idAlamat: 'desc' } },
-    },
+      alamat: { orderBy: { idAlamat: 'desc' } }
+    }
   })
 
   if (!pengguna) throw createError({ statusCode: 404, statusMessage: 'Pengguna tidak ditemukan' })

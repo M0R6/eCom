@@ -4,7 +4,7 @@ const schema = z.object({
   nama: z.string().min(2),
   email: z.string().email(),
   kataSandi: z.string().min(8),
-  peran: z.enum(['Petani', 'Konsumen']),
+  peran: z.enum(['Petani', 'Konsumen'])
 })
 
 export default defineEventHandler(async (event) => {
@@ -21,8 +21,8 @@ export default defineEventHandler(async (event) => {
         nama: body.nama,
         email: body.email,
         kataSandi: await hashPassword(body.kataSandi),
-        peran: body.peran,
-      },
+        peran: body.peran
+      }
     })
 
     if (body.peran === 'Petani') {
@@ -39,8 +39,8 @@ export default defineEventHandler(async (event) => {
       id: pengguna.idPengguna,
       nama: pengguna.nama,
       email: pengguna.email,
-      peran: pengguna.peran,
-    },
+      peran: pengguna.peran
+    }
   })
   return { ok: true }
 })

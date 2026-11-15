@@ -6,15 +6,6 @@ export default defineNuxtConfig({
     'nuxt-auth-utils'
   ],
 
-  vite: {
-    optimizeDeps: {
-      include: [
-        '@vue/devtools-core',
-        'zod',
-      ]
-    }
-  },
-  
   devtools: {
     enabled: true
   },
@@ -25,11 +16,26 @@ export default defineNuxtConfig({
     preference: 'system'
   },
 
+  runtimeConfig: {
+    // Hanya tersedia di server. Isi lewat NUXT_GROQ_API_KEY di .env.
+    groqApiKey: '',
+    groqModel: 'openai/gpt-oss-20b'
+  },
+
   routeRules: {
     '/': { prerender: true }
   },
 
   compatibilityDate: '2026-06-30',
+
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        'zod'
+      ]
+    }
+  },
 
   eslint: {
     config: {

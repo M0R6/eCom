@@ -7,12 +7,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Alamat tidak ditemukan' })
   }
 
-  // langganan aktif mereferensi alamat ini — cegah penghapusan
+  // FK langganan.idAlamat cascade: menghapus alamat juga menghapus langganan yang dijeda
   const dipakai = await prisma.langganan.findFirst({
-    where: { idAlamat: id, status: 'Aktif' },
+    where: { idAlamat: id, status: { in: ['Aktif', 'Jeda'] } }
   })
   if (dipakai) {
-    throw createError({ statusCode: 409, statusMessage: 'Alamat dipakai langganan aktif' })
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Alamat dipakai langganan yang masih aktif atau dijeda'
+    })
   }
 
   await prisma.alamat.delete({ where: { idAlamat: id } })

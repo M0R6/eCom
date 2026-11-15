@@ -7,12 +7,12 @@ const schema = z.object({
       namaPertanian: z.string().min(1).max(150).optional(),
       nomorTelepon: z.string().max(20).optional(),
       alamat: z.string().optional(),
-      deskripsi: z.string().optional(),
+      deskripsi: z.string().optional()
     })
     .optional(),
   profilKonsumen: z
     .object({ nomorTelepon: z.string().max(20).optional() })
-    .optional(),
+    .optional()
 })
 
 export default defineEventHandler(async (event) => {
@@ -25,19 +25,19 @@ export default defineEventHandler(async (event) => {
     if (nama) {
       await tx.pengguna.update({
         where: { idPengguna: user.id },
-        data: { nama },
+        data: { nama }
       })
     }
     if (profilPetani && user.peran === 'Petani') {
       await tx.profilpetani.update({
         where: { idPengguna: user.id },
-        data: profilPetani,
+        data: profilPetani
       })
     }
     if (profilKonsumen && user.peran === 'Konsumen') {
       await tx.profilkonsumen.update({
         where: { idPengguna: user.id },
-        data: profilKonsumen,
+        data: profilKonsumen
       })
     }
   })

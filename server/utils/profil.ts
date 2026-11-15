@@ -10,7 +10,7 @@ export async function getProfilPetani(event: Parameters<typeof requireUserSessio
   }
 
   let profil = await prisma.profilpetani.findUnique({
-    where: { idPengguna: user.id },
+    where: { idPengguna: user.id }
   })
   if (!profil) {
     profil = await prisma.profilpetani.create({ data: { idPengguna: user.id } })
@@ -27,7 +27,7 @@ export async function getProfilKonsumen(event: Parameters<typeof requireUserSess
   }
 
   let profil = await prisma.profilkonsumen.findUnique({
-    where: { idPengguna: user.id },
+    where: { idPengguna: user.id }
   })
   if (!profil) {
     profil = await prisma.profilkonsumen.create({ data: { idPengguna: user.id } })

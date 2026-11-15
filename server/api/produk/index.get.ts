@@ -4,6 +4,6 @@ export default defineEventHandler(async (event) => {
   return prisma.produk.findMany({
     where: { idProfilPetani: profil.idPetani },
     include: { kategori: { select: { nama: true } }, gambarproduk: { orderBy: { urutanTampil: 'asc' } } },
-    orderBy: { idProduk: 'desc' },
+    orderBy: { idProduk: 'desc' }
   })
 })

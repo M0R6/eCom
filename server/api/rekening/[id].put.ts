@@ -3,7 +3,7 @@ import { z } from 'zod'
 const schema = z.object({
   namaBank: z.string().min(1).max(50).optional(),
   nomorRekening: z.string().min(5).max(50).optional(),
-  pemilikRekening: z.string().min(1).max(100).optional(),
+  pemilikRekening: z.string().min(1).max(100).optional()
 })
 
 export default defineEventHandler(async (event) => {

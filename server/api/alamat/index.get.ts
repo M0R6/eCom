@@ -3,6 +3,6 @@ export default defineEventHandler(async (event) => {
 
   return prisma.alamat.findMany({
     where: { idPengguna: user.id },
-    orderBy: { idAlamat: 'desc' },
+    orderBy: { idAlamat: 'desc' }
   })
 })

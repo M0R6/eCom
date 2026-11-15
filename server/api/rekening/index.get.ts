@@ -3,6 +3,6 @@ export default defineEventHandler(async (event) => {
 
   return prisma.akunbank.findMany({
     where: { idProfilPetani: profil.idPetani },
-    orderBy: { idRekening: 'desc' },
+    orderBy: { idRekening: 'desc' }
   })
 })
