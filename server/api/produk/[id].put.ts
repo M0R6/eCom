@@ -7,7 +7,7 @@ const schema = z.object({
   stok: z.number().int().min(0),
   satuan: z.string().min(1).max(20),
   status: z.enum(['Tersedia', 'Habis', 'Disembunyikan']),
-  idKategori: z.number().int().positive().nullable().optional()
+  idKategori: z.number().int().positive().nullable().optional(),
 })
 
 export default defineEventHandler(async (event) => {
