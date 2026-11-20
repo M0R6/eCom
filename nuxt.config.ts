@@ -19,7 +19,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Hanya tersedia di server. Isi lewat NUXT_GROQ_API_KEY di .env.
     groqApiKey: '',
-    groqModel: 'openai/gpt-oss-20b'
+    groqModel: 'openai/gpt-oss-20b',
+    public: {
+      appName: process.env.APP_NAME || 'Default App'
+    }
   },
 
   routeRules: {

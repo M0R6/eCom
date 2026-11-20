@@ -252,6 +252,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown)
 })
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -266,7 +268,7 @@ onBeforeUnmount(() => {
       <div class="flex items-center justify-between border-b border-default bg-elevated px-4 py-3">
         <div>
           <h2 class="text-base font-semibold text-default">
-            Tanya eCom
+            Tanya {{config.public.appName}}
           </h2>
           <p class="text-xs text-muted">
             Bantuan informasi produk dan pesanan

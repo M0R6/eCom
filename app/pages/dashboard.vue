@@ -9,6 +9,8 @@ async function logout() {
   await clear()
   await navigateTo('/login')
 }
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -30,7 +32,7 @@ async function logout() {
           {{
             isPetani
               ? 'Kelola hasil panen, informasi pertanian, dan rekening pencairan dana Anda.'
-              : 'Kelola data diri, alamat pengiriman, atau gunakan Tanya eCom di pojok kanan bawah untuk bantuan.'
+              : `Kelola data diri, alamat pengiriman, atau gunakan Tanya ${ config.public.appName } di pojok kanan bawah untuk bantuan.`
           }}
         </p>
       </div>

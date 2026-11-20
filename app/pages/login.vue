@@ -13,6 +13,7 @@ const toast = useToast()
 const { fetch: refreshSession } = useUserSession()
 const loading = ref(false)
 const route = useRoute()
+const config = useRuntimeConfig()
 
 async function onSubmit() {
   loading.value = true
@@ -44,6 +45,7 @@ if (route.query.unauthorized) {
       <div class="flex items-center justify-center">
         <AppLogo class="size-48" />
       </div>
+      <h1 class="ml-2 text-2xl font-bold text-center my-3">{{ config.public.appName }}</h1>
       <template #header>
         <h1 class="font-semibold">
           Login

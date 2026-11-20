@@ -2,6 +2,7 @@
 const { loggedIn, user } = useUserSession()
 const route = useRoute()
 const toast = useToast()
+const config = useRuntimeConfig()
 
 const isPetani = computed(() => user.value?.peran === 'Petani')
 
@@ -34,7 +35,7 @@ onMounted(() => {
     <UContainer class="flex min-h-[calc(100dvh-var(--ui-header-height))] flex-col items-center justify-center py-12 text-center">
       <AppLogo class="mb-6 size-24" />
       <h1 class="mb-3 text-3xl font-bold sm:text-4xl">
-        eCom Petani dan Konsumen
+        Selamat Datang di <span class="text-primary">{{ config.public.appName }}</span>
       </h1>
       <p class="mb-8 max-w-md text-base text-muted">
         Platform jual beli hasil panen langsung antara petani dan konsumen.

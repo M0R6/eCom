@@ -4,6 +4,7 @@ import type { NavigationMenuItem, DropdownMenuItem } from '@nuxt/ui'
 const route = useRoute()
 const colorMode = useColorMode()
 const { loggedIn, user, clear } = useUserSession()
+const config = useRuntimeConfig()
 
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
@@ -174,7 +175,7 @@ const logoutModal = ref(false)
       <!-- <UIcon name="streamline-freehand:e-commerce-cart-laptop" class="size-8" /> -->
       <div class="flex items-center gap-2">
         <AppLogo class="size-10" />
-        <h1 class="align-middle text-center ml-2">eCommerce</h1>
+        <h1 class="align-middle text-center ml-2">{{ config.public.appName }}</h1>
       </div>
     </template>
 
