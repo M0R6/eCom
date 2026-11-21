@@ -20,23 +20,11 @@ interface Keranjang {
   itemkeranjang: ItemKeranjang[]
 }
 
-interface Alamat {
-  idAlamat: number
-  alamatTersimpan: string | null
-  namaPenerima: string | null
-  detailAlamat: string | null
-  kota: string | null
-}
-
 const toast = useToast()
 const { data: keranjang, refresh, status: statusMuat, error } = await useFetch<Keranjang>('/api/keranjang')
-const { data: daftarAlamat } = await useFetch<Alamat[]>('/api/alamat')
 
 const loadingId = ref<number | null>(null)
 const hapusId = ref<number | null>(null)
-const checkoutOpen = ref(false)
-const idAlamatDipilih = ref<number | null>(null)
-const checkoutLoading = ref(false)
 
 const harga = (v: string | number) => Number(v)
 
@@ -61,11 +49,11 @@ async function ubahJumlah(item: ItemKeranjang, delta: number) {
       body: { jumlah: jumlahBaru }
     })
     await refresh()
-  } catch (err: any) {
+  } catch (err) {
     toast.add({
       id: `err-${item.idItemKeranjang}`,
       title: 'Gagal mengubah jumlah',
-      description: err?.data?.statusMessage,
+      description: (err as { data?: { statusMessage?: string } })?.data?.statusMessage,
       color: 'error'
     })
   } finally {
@@ -82,11 +70,11 @@ async function hapusItem() {
     await $fetch(`/api/keranjang/${id}`, { method: 'DELETE' })
     toast.add({ id: `hapus-${id}`, title: 'Item dihapus dari keranjang', color: 'success' })
     await refresh()
-  } catch (err: any) {
+  } catch (err) {
     toast.add({
       id: `err-hapus-${id}`,
       title: 'Gagal menghapus item',
-      description: err?.data?.statusMessage,
+      description: (err as { data?: { statusMessage?: string } })?.data?.statusMessage,
       color: 'error'
     })
   } finally {
@@ -96,36 +84,6 @@ async function hapusItem() {
 
 const gambar = (item: ItemKeranjang) =>
   item.produk.gambarproduk?.[0]?.tautanGambar ?? ''
-
-const labelAlamat = (a: Alamat) =>
-  a.alamatTersimpan || [a.namaPenerima, a.kota].filter(Boolean).join(', ') || `Alamat #${a.idAlamat}`
-
-async function checkout() {
-  if (!idAlamatDipilih.value) {
-    toast.add({ id: 'alamat-wajib', title: 'Pilih alamat pengiriman', color: 'warning' })
-    return
-  }
-  checkoutLoading.value = true
-  try {
-    await $fetch('/api/keranjang/checkout', {
-      method: 'POST',
-      body: { idAlamat: idAlamatDipilih.value }
-    })
-    toast.add({ id: 'checkout-ok', title: 'Pesanan berhasil dibuat!', color: 'success' })
-    checkoutOpen.value = false
-    idAlamatDipilih.value = null
-    await refresh()
-  } catch (err: any) {
-    toast.add({
-      id: 'checkout-err',
-      title: 'Checkout gagal',
-      description: err?.data?.statusMessage,
-      color: 'error'
-    })
-  } finally {
-    checkoutLoading.value = false
-  }
-}
 </script>
 
 <template>
@@ -135,19 +93,33 @@ async function checkout() {
       <h1 class="mb-6 text-2xl font-semibold">
         Keranjang Belanja
       </h1>
-      <div v-if="statusMuat === 'pending'" class="py-12 text-center text-muted">
+      <div
+        v-if="statusMuat === 'pending'"
+        class="py-12 text-center text-muted"
+      >
         Memuat keranjang…
       </div>
-      <div v-else-if="error" class="py-12 text-center">
+      <div
+        v-else-if="error"
+        class="py-12 text-center"
+      >
         <p class="mb-3 text-error">
-          {{ error.data?.statusMessage || 'Keranjang gagal dimuat.' }}
+          {{ error.statusMessage || 'Keranjang gagal dimuat.' }}
         </p>
-        <UButton color="neutral" variant="outline" class="min-h-11" @click="refresh()">
+        <UButton
+          color="neutral"
+          variant="outline"
+          class="min-h-11"
+          @click="refresh()"
+        >
           Coba lagi
         </UButton>
       </div>
 
-      <div v-else-if="keranjang?.itemkeranjang.length" class="space-y-4">
+      <div
+        v-else-if="keranjang?.itemkeranjang.length"
+        class="space-y-4"
+      >
         <UCard
           v-for="item in keranjang.itemkeranjang"
           :key="item.idItemKeranjang"
@@ -164,7 +136,10 @@ async function checkout() {
               v-else
               class="size-20 rounded-lg bg-elevated flex items-center justify-center shrink-0"
             >
-              <UIcon name="i-lucide-image-off" class="size-8 text-muted" />
+              <UIcon
+                name="i-lucide-image-off"
+                class="size-8 text-muted"
+              />
             </div>
 
             <div class="flex-1 min-w-0">
@@ -174,7 +149,10 @@ async function checkout() {
               <p class="text-sm text-muted">
                 {{ formatRupiah(harga(item.produk.harga)) }}<span v-if="item.produk.satuan"> / {{ item.produk.satuan }}</span>
               </p>
-              <p v-if="item.produk.status === 'Habis'" class="text-sm text-error mt-1">
+              <p
+                v-if="item.produk.status === 'Habis'"
+                class="text-sm text-error mt-1"
+              >
                 Stok habis
               </p>
 
@@ -227,8 +205,7 @@ async function checkout() {
           size="lg"
           block
           class="min-h-11"
-          :disabled="!keranjang?.itemkeranjang.length"
-          @click="checkoutOpen = true"
+          to="/checkout"
         >
           Checkout
         </UButton>
@@ -248,76 +225,20 @@ async function checkout() {
       >
         <template #footer>
           <div class="flex w-full justify-end gap-2">
-            <UButton color="neutral" variant="outline" class="min-h-11" @click="hapusId = null">
-              Batal
-            </UButton>
-            <UButton color="error" class="min-h-11" @click="hapusItem">
-              Hapus
-            </UButton>
-          </div>
-        </template>
-      </UModal>
-
-      <UModal
-        v-model:open="checkoutOpen"
-        title="Checkout"
-        description="Pilih alamat pengiriman untuk menyelesaikan pesanan."
-      >
-        <template #default>
-          <div class="p-4 space-y-4">
-            <div v-if="daftarAlamat?.length">
-              <label class="text-sm font-medium mb-2 block">Alamat Pengiriman</label>
-              <div class="space-y-2">
-                <UCard
-                  v-for="a in daftarAlamat"
-                  :key="a.idAlamat"
-                  variant="outline"
-                  class="cursor-pointer transition"
-                  :class="idAlamatDipilih === a.idAlamat ? 'ring-2 ring-primary' : ''"
-                  @click="idAlamatDipilih = a.idAlamat"
-                >
-                  <div class="flex items-center gap-3">
-                    <UIcon
-                      :name="idAlamatDipilih === a.idAlamat ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-                      class="size-5 shrink-0"
-                      :class="idAlamatDipilih === a.idAlamat ? 'text-primary' : 'text-muted'"
-                    />
-                    <div>
-                      <p class="font-medium text-sm">{{ labelAlamat(a) }}</p>
-                      <p v-if="a.detailAlamat" class="text-xs text-muted">{{ a.detailAlamat }}</p>
-                    </div>
-                  </div>
-                </UCard>
-              </div>
-            </div>
-            <UEmpty
-              v-else
-              icon="i-lucide-map-pin"
-              description="Belum ada alamat. Tambahkan alamat di halaman profil."
-            />
-
-            <UCard variant="soft">
-              <div class="flex items-center justify-between">
-                <span class="font-medium">Total Bayar</span>
-                <span class="font-bold text-lg">{{ formatRupiah(total) }}</span>
-              </div>
-            </UCard>
-          </div>
-        </template>
-
-        <template #footer>
-          <div class="flex w-full justify-end gap-2">
-            <UButton color="neutral" variant="outline" class="min-h-11" @click="checkoutOpen = false">
+            <UButton
+              color="neutral"
+              variant="outline"
+              class="min-h-11"
+              @click="hapusId = null"
+            >
               Batal
             </UButton>
             <UButton
-              icon="i-lucide-check"
+              color="error"
               class="min-h-11"
-              :loading="checkoutLoading"
-              :disabled="!idAlamatDipilih || !daftarAlamat?.length"
-              @click="checkout"
+              @click="hapusItem"
             >
-              Buat Pesanan
+              Hapus
             </UButton>
           </div>
         </template>
