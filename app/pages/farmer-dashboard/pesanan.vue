@@ -160,7 +160,7 @@ async function konfirmasiBatal() {
         class="py-12 text-center"
       >
         <p class="mb-3 text-error">
-          {{ error.data?.statusMessage || 'Pesanan gagal dimuat.' }}
+          {{ 'Pesanan gagal dimuat.' }}
         </p>
         <UButton
           color="neutral"

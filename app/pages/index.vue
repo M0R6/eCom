@@ -26,6 +26,16 @@ onMounted(() => {
       color: 'warning'
     })
   }
+
+  if (route.query.forbidden && user.value?.peran === 'Petani') {
+    toast.add({
+      id: 'akses-ditolak-konsumen',
+      title: 'Akses ke halaman ini ditolak',
+      description: 'Halaman tersebut hanya dapat diakses oleh akun Konsumen.',
+      icon: 'i-heroicons-exclamation-triangle',
+      color: 'warning'
+    })
+  }
 })
 </script>
 
@@ -101,6 +111,18 @@ onMounted(() => {
           Profil Saya
         </UButton>
       </div>
+
+        <UButton
+          to="/katalog"
+          color="neutral"
+          variant="outline"
+          size="lg"
+          icon="carbon:shopping-catalog"
+          class="min-h-11 mt-2"
+          v-if="!isPetani"
+        >
+          Lihat Katalog
+      </UButton>
     </UContainer>
   </div>
 </template>

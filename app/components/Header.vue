@@ -37,43 +37,18 @@ const items = computed<NavigationMenuItem[]>(() => {
     {
       label: 'Langganan',
       to: '/langganan',
-      icon: 'i-lucide-arrow-path',
+      icon: 'heroicons:arrow-path-rounded-square-20-solid',
       active: route.path.startsWith('/langganan')
     }
   ]
 })
 
-const iconItems = [
-  [
-    {
-      label: 'Light',
-      icon: 'i-lucide-sun',
-      onSelect: () => {
-        colorMode.preference = 'light'
-      }
-    },
-    {
-      label: 'Dark',
-      icon: 'i-lucide-moon',
-      onSelect: () => {
-        colorMode.preference = 'dark'
-      }
-    },
-    {
-      label: 'System',
-      icon: 'i-lucide-monitor',
-      onSelect: () => {
-        colorMode.preference = 'system'
-      }
-    }
-  ]
-]
-
 // Mengubah ikon tombol utama secara dinamis berdasarkan preferensi saat ini
 const currentIcon = computed(() => {
-  if (colorMode.preference === 'light') return 'i-lucide-sun'
-  if (colorMode.preference === 'dark') return 'i-lucide-moon'
-  return 'i-lucide-monitor' // default untuk system
+  switch (colorMode.preference) {
+    case 'light': return 'i-lucide-sun'
+    case 'dark': return 'i-lucide-moon' 
+  }
 })
 
 const itemsDrop = computed<DropdownMenuItem[][]>(() => {
@@ -180,13 +155,9 @@ const logoutModal = ref(false)
     </template>
 
     <template #right>
-      <!-- <UColorModeButton /> -->
-      
-      <UDropdownMenu :items="iconItems" :popper="{ placement: 'bottom-start' }">
-        <UTooltip text="Change color mode" placement="bottom">
-          <UButton color="neutral" variant="ghost" :icon="currentIcon" />
-        </UTooltip>
-      </UDropdownMenu>
+      <UTooltip text="Change color mode" placement="bottom">
+        <UColorModeButton :icon="currentIcon" variant="outline" />
+      </UTooltip>
       
       <UDropdownMenu v-if="loggedIn" :items="itemsDrop">
         <UButton icon="i-lucide-user" color="neutral" variant="outline" />
@@ -211,7 +182,7 @@ const logoutModal = ref(false)
         </UTooltip> -->
 
         <template #footer>
-          <UButton
+          <UButtonx
             label="Close"
             color="neutral"
             variant="outline"

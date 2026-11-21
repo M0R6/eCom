@@ -20,7 +20,7 @@ async function onSubmit() {
   try {
     await $fetch('/api/auth/login', { method: 'POST', body: state })
     await refreshSession()
-    await navigateTo('/dashboard')
+    await navigateTo('/')
   } catch (e: any) {
     toast.add({ title: 'Gagal login', description: e.statusMessage, color: 'error' })
   } finally {
