@@ -53,7 +53,14 @@ export default defineEventHandler(async (event) => {
         idProfilKonsumen: profil.idKonsumen,
         jumlahTotal,
         alamatPengiriman: alamatTeks,
-        barangpesanan: { create: items }
+        barangpesanan: { create: items },
+        riwayatstatuspesanan: {
+          create: {
+            idDiubahOlehPengguna: user.id,
+            statusBaru: 'Menunggu_Pembayaran',
+            catatan: 'Pesanan dibuat'
+          }
+        }
       },
       include: { barangpesanan: true }
     }),

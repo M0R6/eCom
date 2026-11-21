@@ -41,6 +41,12 @@ const items = computed<NavigationMenuItem[]>(() => {
       active: route.path.startsWith('/keranjang')
     },
     {
+      label: 'Pesanan',
+      to: '/pesanan',
+      icon: 'i-lucide-package',
+      active: route.path.startsWith('/pesanan')
+    },
+    {
       label: 'Langganan',
       to: '/langganan',
       icon: 'heroicons:arrow-path-rounded-square-20-solid',
