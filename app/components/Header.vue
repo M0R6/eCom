@@ -34,6 +34,12 @@ const items = computed<NavigationMenuItem[]>(() => {
   }
 
   return [
+     {
+      label: 'Keranjang',
+      to: '/keranjang',
+      icon: 'i-lucide-shopping-cart',
+      active: route.path.startsWith('/keranjang')
+    },
     {
       label: 'Langganan',
       to: '/langganan',
