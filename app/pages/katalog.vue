@@ -134,7 +134,11 @@ async function tambahKeKeranjang(produk: KatalogItem) {
       method: 'POST',
       body: { idProduk: produk.idProduk, jumlah: 1 },
     })
-    jumlahKeranjang.value += 1
+    const keranjang = await $fetch<{ itemkeranjang: { jumlah: number }[] }>('/api/keranjang')
+    jumlahKeranjang.value = keranjang.itemkeranjang.reduce(
+      (total, item) => total + item.jumlah,
+      0,
+    )
     toast.add({
       id: `keranjang-${produk.idProduk}`,
       title: `${produk.nama} masuk keranjang`,

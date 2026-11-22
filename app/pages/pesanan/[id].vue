@@ -36,13 +36,34 @@ const DOT = {
 } as const
 
 const route = useRoute()
-const { data: pesanan, status: statusMuat, error } = await useFetch<Pesanan>(`/api/pesanan/${route.params.id}`)
+const toast = useToast()
+const { data: pesanan, status: statusMuat, error, refresh } = await useFetch<Pesanan>(`/api/pesanan/${route.params.id}`)
+const pembayaranLoading = ref(false)
 
 const rupiah = (n: number) => `Rp${n.toLocaleString('id-ID')}`
 const tanggal = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString('id-ID', { dateStyle: 'long' }) : '-'
 const labelStatus = (s: string | null) => (s && LABEL[s as StatusPesanan]) || s || '-'
 const dotStatus = (s: string | null) => (s ? DOT[s as StatusPesanan] : 'bg-elevated')
+
+async function paid() {
+  if (!pesanan.value || pembayaranLoading.value) return
+  pembayaranLoading.value = true
+  try {
+    await $fetch(`/api/pesanan/bayar/${pesanan.value.idPesanan}`, { method: 'PUT' })
+    await refresh()
+    toast.add({ id: 'bayar-ok', title: 'Pembayaran berhasil!', color: 'success' })
+  } catch (err) {
+    toast.add({
+      id: 'bayar-err',
+      title: 'Gagal melakukan pembayaran',
+      description: (err as { data?: { statusMessage?: string } })?.data?.statusMessage,
+      color: 'error'
+    })
+  } finally {
+    pembayaranLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -150,7 +171,7 @@ const dotStatus = (s: string | null) => (s ? DOT[s as StatusPesanan] : 'bg-eleva
               class="pl-4 relative"
             >
               <span
-                class="absolute -left-[5px] top-1.5 size-2.5 rounded-full"
+                class="absolute -left-1.25 top-1.5 size-2.5 rounded-full"
                 :class="dotStatus(r.statusBaru)"
               />
               <p class="text-sm font-medium">
@@ -173,6 +194,26 @@ const dotStatus = (s: string | null) => (s ? DOT[s as StatusPesanan] : 'bg-eleva
           >
             Belum ada riwayat status.
           </p>
+        </UCard>
+        <UCard
+          v-if="pesanan.status === 'Menunggu_Pembayaran'"
+          variant="soft"
+          class="mt-6 flex flex-col items-center gap-4 text-center"
+        >
+          <p class="text-sm text-muted mb-3 text-center">
+            Silakan lakukan pembayaran untuk memproses pesanan ini.
+          </p>
+          <img src="/QRIS.png" alt="Pembayaran" class="w-sm h-auto" />
+          <UButton
+            :loading="pembayaranLoading"
+            :disabled="pembayaranLoading"
+            @click="paid()"
+            class="min-h-11"
+            variant="solid"
+            color="info"
+          >
+            Sudah bayar? klik di sini!
+          </UButton>
         </UCard>
       </template>
     </UContainer>

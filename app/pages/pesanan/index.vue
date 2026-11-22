@@ -72,6 +72,8 @@ const tanggal = (iso: string | null) =>
           v-for="p in daftar"
           :key="p.idPesanan"
           variant="outline"
+          @click="navigateTo(`/pesanan/${p.idPesanan}`)"
+          class="cursor-pointer"
         >
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">

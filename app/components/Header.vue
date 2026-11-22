@@ -5,6 +5,34 @@ const route = useRoute()
 const colorMode = useColorMode()
 const { loggedIn, user, clear } = useUserSession()
 const config = useRuntimeConfig()
+const jumlahKeranjang = useState<number>('keranjang-count', () => 0)
+
+interface KeranjangCount {
+  itemkeranjang: { jumlah: number }[]
+}
+
+async function refreshJumlahKeranjang() {
+  if (!loggedIn.value || user.value?.peran !== 'Konsumen') {
+    jumlahKeranjang.value = 0
+    return
+  }
+
+  try {
+    const keranjang = await $fetch<KeranjangCount>('/api/keranjang')
+    jumlahKeranjang.value = keranjang.itemkeranjang.reduce(
+      (total, item) => total + item.jumlah,
+      0,
+    )
+  } catch {
+    jumlahKeranjang.value = 0
+  }
+}
+
+watch(
+  [loggedIn, () => user.value?.peran, () => route.fullPath],
+  () => refreshJumlahKeranjang(),
+  { immediate: true },
+)
 
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
@@ -34,11 +62,11 @@ const items = computed<NavigationMenuItem[]>(() => {
   }
 
   return [
-     {
-      label: 'Keranjang',
-      to: '/keranjang',
-      icon: 'i-lucide-shopping-cart',
-      active: route.path.startsWith('/keranjang')
+    {
+      label: 'Katalog',
+      to: '/katalog',
+      icon: 'carbon:shopping-catalog',
+      active: route.path.startsWith('/katalog')
     },
     {
       label: 'Pesanan',
@@ -178,6 +206,21 @@ const logoutModal = ref(false)
       <UTooltip text="Login" placement="bottom">
         <UButton to="/login" variant="solid" v-if="route.path !== '/login' && route.path !== '/register' && !loggedIn">Login</UButton>
       </UTooltip>
+
+      <NuxtLink
+        v-if="loggedIn && user?.peran === 'Konsumen'"
+        to="/keranjang"
+        class="relative inline-flex size-9 items-center justify-center rounded-md text-gray-700 hover:bg-muted hover:text-gray-950"
+        aria-label="Keranjang belanja"
+      >
+        <UIcon name="i-lucide-shopping-cart" class="size-5" />
+        <span
+          v-if="jumlahKeranjang > 0"
+          class="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold leading-5 text-white"
+        >
+          {{ jumlahKeranjang }}
+        </span>
+      </NuxtLink>
 
       <UModal
         v-model:open="logoutModal"

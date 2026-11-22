@@ -83,7 +83,7 @@ const cover = computed(
         />
         {{ produk.profilpetani?.namaPertanian || 'Petani' }}
         · {{ produk.profilpetani?.alamat || 'Lokasi belum diisi' }}
-        </p>
+      </p>
 
       <p class="text-xs text-muted">
         Stok: {{ produk.stok ?? 0 }}

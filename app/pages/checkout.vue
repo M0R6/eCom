@@ -63,12 +63,12 @@ async function bayar() {
   }
   checkoutLoading.value = true
   try {
-    await $fetch('/api/keranjang/checkout', {
+    const pesanan = await $fetch<{ idPesanan: number }>('/api/keranjang/checkout', {
       method: 'POST',
       body: { idAlamat: idAlamatDipilih.value }
     })
     toast.add({ id: 'checkout-ok', title: 'Pesanan berhasil dibuat!', color: 'success' })
-    await navigateTo('/pesanan')
+    await navigateTo(`/pesanan/${pesanan.idPesanan}`)
   } catch (err) {
     toast.add({
       id: 'checkout-err',

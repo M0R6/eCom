@@ -1,12 +1,11 @@
 export default defineEventHandler(async (event) => {
-  const profil = await getProfilPetani(event)
   const id = Number(getRouterParam(event, 'id'))
 
   const produk = await prisma.produk.findUnique({
     where: { idProduk: id },
-    include: { gambarproduk: { orderBy: { urutanTampil: 'asc' } }, kategori: true }
+    include: { gambarproduk: { orderBy: { urutanTampil: 'asc' } }, kategori: true, profilpetani: { select: { namaPertanian: true, alamat: true } } }
   })
-  if (!produk || produk.idProfilPetani !== profil.idPetani) {
+  if (!produk) {
     throw createError({ statusCode: 404, statusMessage: 'Produk tidak ditemukan' })
   }
   return produk

@@ -47,8 +47,37 @@ export default defineEventHandler(async (event) => {
   }))
   const jumlahTotal = items.reduce((s, i) => s + i.subtotal, 0)
 
-  const [pesanan] = await prisma.$transaction([
-    prisma.pesanan.create({
+  const [pesanan] = await prisma.$transaction(async (tx) => {
+    for (const item of keranjang.itemkeranjang) {
+      if (item.produk.stok !== null) {
+        const stokBerhasil = await tx.produk.updateMany({
+          where: {
+            idProduk: item.produk.idProduk,
+            status: 'Tersedia',
+            stok: { gte: item.jumlah }
+          },
+          data: { stok: { decrement: item.jumlah } }
+        })
+
+        if (stokBerhasil.count === 0) {
+          throw createError({
+            statusCode: 409,
+            statusMessage: `Stok "${item.produk.nama}" tidak mencukupi atau baru saja berubah`
+          })
+        }
+
+        await tx.produk.updateMany({
+          where: {
+            idProduk: item.produk.idProduk,
+            stok: 0,
+            status: 'Tersedia'
+          },
+          data: { status: 'Habis' }
+        })
+      }
+    }
+
+    const pesanan = await tx.pesanan.create({
       data: {
         idProfilKonsumen: profil.idKonsumen,
         jumlahTotal,
@@ -63,11 +92,14 @@ export default defineEventHandler(async (event) => {
         }
       },
       include: { barangpesanan: true }
-    }),
-    prisma.itemkeranjang.deleteMany({
+    })
+
+    await tx.itemkeranjang.deleteMany({
       where: { idKeranjang: keranjang.idKeranjang }
     })
-  ])
+
+    return [pesanan]
+  })
 
   return pesanan
 })

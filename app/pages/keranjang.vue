@@ -32,8 +32,8 @@ const total = computed(() =>
   keranjang.value?.itemkeranjang.reduce((s, i) => s + harga(i.produk.harga) * i.jumlah, 0) ?? 0
 )
 
-const formatRupiah = (n: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n)
+// const formatRupiah = (n: number) =>
+//   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n)
 
 async function ubahJumlah(item: ItemKeranjang, delta: number) {
   const jumlahBaru = item.jumlah + delta
@@ -84,6 +84,11 @@ async function hapusItem() {
 
 const gambar = (item: ItemKeranjang) =>
   item.produk.gambarproduk?.[0]?.tautanGambar ?? ''
+
+watch(keranjang, (data) => {
+  const jumlahKeranjang = useState<number>('keranjang-count', () => 0)
+  jumlahKeranjang.value = data?.itemkeranjang.reduce((total, item) => total + item.jumlah, 0) ?? 0
+}, { immediate: true })
 </script>
 
 <template>
@@ -147,7 +152,7 @@ const gambar = (item: ItemKeranjang) =>
                 {{ item.produk.nama }}
               </p>
               <p class="text-sm text-muted">
-                {{ formatRupiah(harga(item.produk.harga)) }}<span v-if="item.produk.satuan"> / {{ item.produk.satuan }}</span>
+                Rp{{ (harga(item.produk.harga)).toLocaleString('id-ID') }}<span v-if="item.produk.satuan"> / {{ item.produk.satuan }}</span>
               </p>
               <p
                 v-if="item.produk.status === 'Habis'"
@@ -179,7 +184,7 @@ const gambar = (item: ItemKeranjang) =>
 
             <div class="flex flex-col items-end justify-between shrink-0">
               <p class="font-semibold whitespace-nowrap">
-                {{ formatRupiah(harga(item.produk.harga) * item.jumlah) }}
+                Rp{{ ((harga(item.produk.harga)) * item.jumlah).toLocaleString('id-ID') }}
               </p>
               <UButton
                 icon="i-lucide-trash-2"
@@ -196,7 +201,7 @@ const gambar = (item: ItemKeranjang) =>
         <UCard variant="soft">
           <div class="flex items-center justify-between">
             <span class="text-lg font-medium">Total</span>
-            <span class="text-xl font-bold">{{ formatRupiah(total) }}</span>
+            <span class="text-xl font-bold">Rp{{ (total).toLocaleString('id-ID') }}</span>
           </div>
         </UCard>
 
