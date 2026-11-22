@@ -28,6 +28,7 @@ interface FilterData {
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
+const config = useRuntimeConfig()
 const { loggedIn, user } = useUserSession()
 
 const limit = 9
@@ -187,6 +188,16 @@ onBeforeUnmount(() => clearTimeout(timer))
     <Header />
 
     <UContainer class="py-8">
+      <div class="mb-6 rounded-xl border border-default bg-default px-6 py-12 text-center dark:bg-default">
+        <AppLogo class="mx-auto mb-4 size-20" />
+        <h1 class="text-2xl font-bold text-highlighted sm:text-3xl">
+          Selamat Datang di {{ config.public.appName }}
+        </h1>
+        <p class="mx-auto mt-2 max-w-md text-sm text-muted">
+          Platform jual beli hasil panen langsung antara petani dan konsumen.
+        </p>
+      </div>
+
       <div class="mb-6">
         <h1 class="text-2xl font-semibold">
           Hasil panen segar langsung dari petani desa
