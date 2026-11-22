@@ -16,12 +16,31 @@ const WARNA = { Aktif: 'success', Jeda: 'neutral', Berhenti: 'neutral' } as cons
 
 const toast = useToast()
 const { data: daftar, refresh, status: statusMuat, error } = await useFetch<Langganan[]>('/api/langganan')
+const pesanError = computed(() => {
+  const data = error.value?.data as { statusMessage?: string } | undefined
+  return data?.statusMessage || 'Langganan gagal dimuat.'
+})
 
 const loadingId = ref<number | null>(null)
 const idBerhenti = ref<number | null>(null)
 
 const tanggal = (iso: string) =>
   new Date(iso).toLocaleDateString('id-ID', { dateStyle: 'long', timeZone: 'UTC' })
+
+function ambilPesanError(error: unknown) {
+  if (typeof error !== 'object' || error === null) return 'Terjadi kesalahan.'
+
+  if ('data' in error && typeof error.data === 'object' && error.data !== null && 'statusMessage' in error.data) {
+    const pesan = error.data.statusMessage
+    if (typeof pesan === 'string') return pesan
+  }
+
+  if ('statusMessage' in error && typeof error.statusMessage === 'string') {
+    return error.statusMessage
+  }
+
+  return 'Terjadi kesalahan.'
+}
 
 async function ubah(id: number, status: StatusLangganan) {
   loadingId.value = id
@@ -33,11 +52,11 @@ async function ubah(id: number, status: StatusLangganan) {
       color: 'success'
     })
     await refresh()
-  } catch (err: any) {
+  } catch (err: unknown) {
     toast.add({
       id: `langganan-gagal-${id}`,
       title: 'Gagal mengubah langganan',
-      description: err?.data?.statusMessage || err?.statusMessage,
+      description: ambilPesanError(err),
       color: 'error'
     })
   } finally {
@@ -73,7 +92,7 @@ async function konfirmasiBerhenti() {
         class="py-12 text-center"
       >
         <p class="mb-3 text-error">
-          {{ error.data?.statusMessage || 'Langganan gagal dimuat.' }}
+          {{ pesanError }}
         </p>
         <UButton
           color="neutral"
