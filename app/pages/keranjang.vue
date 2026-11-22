@@ -61,6 +61,27 @@ async function ubahJumlah(item: ItemKeranjang, delta: number) {
   }
 }
 
+async function ubahJumlahInput(item: ItemKeranjang, event: Event) {
+  const input = event.target as HTMLInputElement
+  const jumlahBaru = Number(input.value)
+
+  if (!Number.isInteger(jumlahBaru) || jumlahBaru < 1) {
+    input.value = String(item.jumlah)
+    toast.add({ id: 'jumlah-min', title: 'Jumlah minimal adalah 1', color: 'warning' })
+    return
+  }
+
+  if (item.produk.stok !== null && jumlahBaru > item.produk.stok) {
+    input.value = String(item.jumlah)
+    toast.add({ id: 'stok-max', title: 'Stok tidak mencukupi', color: 'warning' })
+    return
+  }
+
+  if (jumlahBaru !== item.jumlah) {
+    await ubahJumlah(item, jumlahBaru - item.jumlah)
+  }
+}
+
 async function hapusItem() {
   if (hapusId.value === null) return
   const id = hapusId.value
@@ -170,13 +191,25 @@ watch(keranjang, (data) => {
                   :disabled="item.jumlah <= 1 || loadingId === item.idItemKeranjang"
                   @click="ubahJumlah(item, -1)"
                 />
-                <span class="w-8 text-center text-sm font-medium tabular-nums">{{ item.jumlah }}</span>
+                <UInput
+                  :model-value="item.jumlah"
+                  type="number"
+                  name="jumlah"
+                  :min="1"
+                  :max="item.produk.stok ?? undefined"
+                  :disabled="loadingId === item.idItemKeranjang"
+                  class="w-16"
+                  :ui="{ base: 'text-center' }"
+                  aria-label="Jumlah produk"
+                  @change="ubahJumlahInput(item, $event)"
+                  @keyup.enter="ubahJumlahInput(item, $event)"
+                />
                 <UButton
                   icon="i-lucide-plus"
                   size="xs"
                   color="neutral"
                   variant="outline"
-                  :disabled="loadingId === item.idItemKeranjang"
+                  :disabled="loadingId === item.idItemKeranjang || (item.produk.stok !== null && item.jumlah >= item.produk.stok)"
                   @click="ubahJumlah(item, 1)"
                 />
               </div>
