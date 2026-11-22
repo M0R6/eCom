@@ -5,7 +5,7 @@ interface ProdukKatalog {
   harga: number | string
   stok: number | null
   satuan: string | null
-  status: 'Tersedia' | 'Habis' | null
+  status: 'Tersedia' | 'Habis' | 'Disembunyikan' | null
   kategori: { nama: string } | null
   profilpetani: { idPetani: number, namaPertanian: string | null, alamat: string | null } | null
   gambarproduk: { tautanGambar: string }[]
@@ -71,7 +71,7 @@ const cover = computed(
 
       <p class="font-semibold">
         Rp{{ Number(produk.harga).toLocaleString('id-ID') }}
-        <span class="text-xs font-normal text-muted">/ {{ produk.satuan ?? 'pcs' }}</span>
+        <span class="text-xs font-normal text-muted">/ {{ produk.satuan ?? 'pcs' }} {{ produk.profilpetani?.idPetani }}</span>
       </p>
 
       <p

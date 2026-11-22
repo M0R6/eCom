@@ -10,7 +10,7 @@ interface ProdukRekomendasi {
   harga: number | string
   stok: number | null
   satuan: string | null
-  status: 'Tersedia' | 'Habis' | null
+  status: 'Tersedia' | 'Habis' | 'Disembunyikan' | null
   kategori: { nama: string } | null
   profilpetani: { idPetani: number, namaPertanian: string | null, alamat: string | null } | null
   gambarproduk: { tautanGambar: string }[]
@@ -108,6 +108,8 @@ async function tambahKeKeranjang(produk: ProdukRekomendasi) {
     loadingTambah.value = null
   }
 }
+
+
 </script>
 
 <template>
@@ -174,8 +176,16 @@ async function tambahKeKeranjang(produk: ProdukRekomendasi) {
            · {{ product.profilpetani?.alamat || 'Lokasi belum diisi' }}
          </p>
          <p class="text-muted mb-4">{{ product.deskripsi }}</p>
-         <p class="text-lg font-semibold mb-4">Rp {{ product.harga }}</p>
-         <UButton color="primary" to="/keranjang" icon="i-heroicons-shopping-cart">Tambah ke Keranjang</UButton>
+         <p class="text-2xl font-semibold mb-4">Rp {{ product.harga }} / {{ product.satuan }}</p>
+         <UButton
+           color="primary"
+           icon="i-heroicons-shopping-cart"
+           :loading="loadingTambah === product.idProduk"
+           :disabled="product.status === 'Habis' || (product.stok !== null && product.stok <= 0)"
+           @click="tambahKeKeranjang(product)"
+         >
+           {{ product.status === 'Habis' || (product.stok !== null && product.stok <= 0) ? 'Stok Habis' : 'Tambah ke Keranjang' }}
+         </UButton>
         </div>
       </div>
       <div v-else class="text-center text-muted">
