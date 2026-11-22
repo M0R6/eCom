@@ -71,7 +71,7 @@ const cover = computed(
 
       <p class="font-semibold">
         Rp{{ Number(produk.harga).toLocaleString('id-ID') }}
-        <span class="text-xs font-normal text-muted">/ {{ produk.satuan ?? 'pcs' }} {{ produk.profilpetani?.idPetani }}</span>
+        <span class="text-xs font-normal text-muted">/ {{ produk.satuan ?? 'pcs' }}</span>
       </p>
 
       <p
