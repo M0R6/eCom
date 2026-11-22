@@ -2,6 +2,8 @@
 definePageMeta({ middleware: 'auth' })
 
 const { user, clear } = useUserSession()
+const toast = useToast()
+const route = useRoute()
 const isPetani = computed(() => user.value?.peran === 'Petani')
 
 async function logout() {
@@ -9,6 +11,48 @@ async function logout() {
   await clear()
   await navigateTo('/login')
 }
+
+onMounted(() => {
+  if (route.query.notfarmer && user.value?.peran !== 'Petani') {
+    toast.add({
+      id: 'akses-ditolak-petani',
+      title: 'Akses ke halaman ini ditolak',
+      description: 'Halaman tersebut hanya dapat diakses oleh akun Petani.',
+      icon: 'i-heroicons-exclamation-triangle',
+      color: 'warning'
+    })
+  }
+
+  if (route.query.notkonsumen && user.value?.peran !== 'Konsumen') {
+    toast.add({
+      id: 'akses-ditolak-konsumen',
+      title: 'Akses ke halaman ini ditolak',
+      description: 'Halaman tersebut hanya dapat diakses oleh akun Konsumen.',
+      icon: 'i-heroicons-exclamation-triangle',
+      color: 'warning'
+    })
+  }
+
+  if (route.query.forbidden && user.value?.peran === 'Petani') {
+    toast.add({
+      id: 'akses-ditolak-petani',
+      title: 'Akses ke halaman ini ditolak',
+      description: 'Halaman tersebut tidak dapat diakses oleh akun Petani.',
+      icon: 'i-heroicons-exclamation-triangle',
+      color: 'warning'
+    })
+  }
+
+    if (route.query.authorized) {
+    toast.add({
+      id: 'sudah-login',
+      title: 'Akses ke halaman ini ditolak',
+      description: 'Halaman tersebut tidak dapat diakses jika Anda sudah login.',
+      icon: 'i-heroicons-exclamation-triangle',
+      color: 'warning'
+    })
+  }
+})
 
 const config = useRuntimeConfig()
 </script>

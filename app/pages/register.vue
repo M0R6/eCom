@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
+definePageMeta({ middleware: 'unauth' })
 
 const roleItems = [
   { label: 'Konsumen', value: 'Konsumen', description: 'Saya ingin membeli produk' },

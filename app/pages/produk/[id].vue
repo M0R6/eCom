@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const { data: product } = await useFetch(`/api/produk/${route.params.id}`)
+definePageMeta({ middleware: 'forbidpetani' })
 
 const activeImage = ref(0)
 

@@ -10,7 +10,7 @@ const schema = z.object({
 
 const state = reactive({ email: '', kataSandi: '' })
 const toast = useToast()
-const { fetch: refreshSession } = useUserSession()
+const { fetch: refreshSession, user } = useUserSession()
 const loading = ref(false)
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -20,7 +20,13 @@ async function onSubmit() {
   try {
     await $fetch('/api/auth/login', { method: 'POST', body: state })
     await refreshSession()
-    await navigateTo('/')
+    if(user.value?.peran === 'Konsumen') {
+      await navigateTo(route.query.redirect?.toString() || '/katalog')
+    } else if(user.value?.peran === 'Petani') {
+      await navigateTo('/dashboard')
+    } else {
+      await navigateTo('/')
+    }
   } catch (e: any) {
     toast.add({ title: 'Gagal login', description: e.statusMessage, color: 'error' })
   } finally {
