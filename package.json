@@ -27,6 +27,7 @@
     "@types/node": "^26.6.6",
     "eslint": "^10.13.0",
     "eslint-plugin-better-tailwindcss": "^4.10.0",
+    "nuxt-qrcode": "^0.4.10",
     "prisma": "^7.10.1",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",

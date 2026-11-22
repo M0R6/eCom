@@ -3,12 +3,29 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
-    'nuxt-auth-utils'
+    'nuxt-auth-utils',
+    'nuxt-qrcode',
   ],
+
+  qrcode: {
+    options: {
+      // variant: 'pixelated',
+      // OR
+      variant: {
+        inner: 'circle',
+        marker: 'rounded',
+        pixel: 'rounded',
+      },
+      radius: 1,
+      blackColor: 'currentColor', // 'var(--ui-text-highlighted)' if you are using `@nuxt/ui` v3
+      whiteColor: 'transparent',  // 'var(--ui-bg)'
+    },
+  },
 
   devtools: {
     enabled: true
   },
+
 
   css: ['~/assets/css/main.css'],
 

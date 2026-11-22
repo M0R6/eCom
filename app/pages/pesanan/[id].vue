@@ -64,6 +64,43 @@ async function paid() {
     pembayaranLoading.value = false
   }
 }
+
+const qrisStatis = '00020101021126570011ID.DANA.WWW011893600915315911011002091591101100303UMI51440014ID.CO.QRIS.WWW0215ID10210818357820303UMI5204899953033605802ID5912MORGAN STORE6011Kab. Bantul610555188630406A2'
+
+function createDynamicQRIS(qrisStatis: string, nominal: number): string {
+  let qris = qrisStatis.slice(0, -4)
+  qris = qris.replace('010211', '010212')
+
+  const nominalString = String(nominal)
+  const lengthString = nominalString.length.toString().padStart(2, '0')
+  const tagNominal = `54${lengthString}${nominalString}`
+
+  const parts = qris.split('5802ID')
+  if (parts.length < 2) {
+    throw new Error('Tag negara QRIS tidak ditemukan')
+  }
+
+  qris = `${parts[0]}${tagNominal}5802ID${parts[1]}`
+  return qris + calculateCRC16(qris)
+}
+
+function calculateCRC16(value: string): string {
+  let crc = 0xffff
+
+  for (let i = 0; i < value.length; i++) {
+    crc ^= value.charCodeAt(i) << 8
+
+    for (let bit = 0; bit < 8; bit++) {
+      if ((crc & 0x8000) !== 0) {
+        crc = ((crc << 1) ^ 0x1021) & 0xffff
+      } else {
+        crc = (crc << 1) & 0xffff
+      }
+    }
+  }
+
+  return crc.toString(16).toUpperCase().padStart(4, '0')
+}
 </script>
 
 <template>
@@ -203,7 +240,12 @@ async function paid() {
           <p class="text-sm text-muted mb-3 text-center">
             Silakan lakukan pembayaran untuk memproses pesanan ini.
           </p>
-          <img src="/QRIS.png" alt="Pembayaran" class="w-sm h-auto" />
+          <!-- <img  src="/QRIS.png" alt="Pembayaran" class="w-sm h-auto" /> -->
+          <Qrcode
+            :value="createDynamicQRIS(qrisStatis, pesanan.jumlahTotal)"
+            size="200"
+            class="mb-3"
+          />
           <UButton
             :loading="pembayaranLoading"
             :disabled="pembayaranLoading"
